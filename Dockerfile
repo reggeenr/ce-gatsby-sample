@@ -2,18 +2,18 @@
 ## STAGE 1 - Building the gatsby stuff
 ##
 FROM node:latest as builder
-RUN apt-get update || : && apt-get install python -y
 
+# Preparation steps to setup the build environment 
+RUN apt-get update || : && apt-get install python -y
 WORKDIR /app
 COPY package*.json .
 RUN npm install
+
+# Copy all files into the container image
 COPY . .
+
+# Command that is being executed at container build time
 RUN ["npm", "run", "build"]
 
-##
-## STAGE 2 - Serving the static content
-##
-FROM nginx
-
-EXPOSE 8080
-COPY --from=builder /app/public /usr/share/nginx/html
+# Command that is being executed at deploy time
+CMD ["npm", "run", "serve"]
